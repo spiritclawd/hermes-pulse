@@ -1,184 +1,263 @@
+# Hermes Pulse 🌀
 
-## 🏆 Hackathon Submission
+> **Zaia's live command center** — real-time agent heartbeat, token flow, and error awareness built into the Hermes dashboard.
 
-**Track:** Best Plugin ($600 OpenRouter credits)
-
-**Submission Checklist:**
-- ✅ Open source repo: https://github.com/spiritclawd/hermes-pulse
-- ✅ Built with Hermes Agent SDK (React + TypeScript)
-- ✅ Demonstrated with live screenshot + video
-- ✅ Install instructions included
-- ✅ MIT License
-
-**Why this is awesome & useful:**
-
-1. **Visibility** — Before this, you had no way to see agent status without checking logs or CLI. Pulse puts it front-and-center in the dashboard.
-
-2. **Real-time feedback** — Auto-refresh every 5 seconds means you always know if the agent is healthy or stuck.
-
-3. **Error awareness** — Errors from logs are surfaced directly in the UI, no need to `tail ~/.hermes/logs/errors.log`.
-
-4. **Quick actions** — Restart gateway with one click; no need to find and kill processes.
-
-5. **Cost monitoring** — Token gauge helps prevent surprise bills by visualizing consumption.
-
-6. **Beautiful UX** — Cyberpunk HUD aesthetic makes monitoring actually enjoyable, not a chore.
-
-**Built in 24 hours** using the new Hermes plugin SDK.
+![Hermes Pulse Screenshot](./docs/pzaia-screenshot.png)
+*Hermes Pulse with HUD Cyber theme — operational telemetry, not just numbers.*
 
 ---
 
-# Hermes Pulse 🚀
+## TL;DR
 
-> Live command center plugin for the Hermes Agent dashboard — real-time agent status, token usage, recent errors, and quick actions.
+Install → restart dashboard → visit `/pulse`. See agent health, token gauge, error stream, and recent sessions all in one glance. Auto-refreshing. Beautiful. No log tailing required.
 
-[![Hermes Agent](https://img.shields.io/badge/Hermes-Agent-3fd3ff?style=flat-square)](https://github.com/NousResearch/hermes-agent)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-## 📸 Preview
-
-![Hermes Pulse Dashboard](./docs/screenshot.png)
-*Hermes Pulse in action — real-time metrics, token gauge, error panel, and quick actions.*
-
-## ✨ Features
-
-- **Live Agent Status** — Gateway health, version, active sessions count with auto-refresh every 5 seconds
-- **Token Usage Gauge** — Visual progress bar showing token consumption with cost display and cache hit rate
-- **Usage Trend Sparkline** — 7-day token usage trend rendered as inline SVG sparkline
-- **Error Monitoring** — Real-time error log panel pulled from `/api/logs?level=ERROR`
-- **Quick Actions** — One-click gateway restart, cache clear, and full logs view
-- **Recent Sessions Feed** — Scrollable list of most recent conversations with platform, model, and timing
-- **Polished HUD UI** — Cyberpunk-inspired design with cyan/amber accents, Orbitron typography, and animated pulse indicators
-
-## 📦 Installation
-
-### Option 1: Manual (quick)
-
-```bash
-# 1. Clone this repo
+```
 git clone https://github.com/spiritclawd/hermes-pulse.git
-cd hermes-pulse
-
-# 2. Build the frontend
-npm install
-npm run build
-
-# 3. Install to Hermes
+cd hermes-pulse && npm install && npm run build
 mkdir -p ~/.hermes/plugins/hermes-pulse/dashboard
 cp -r dist manifest.json plugin_api.py ~/.hermes/plugins/hermes-pulse/dashboard/
-
-# 4. Restart Hermes dashboard
-# If running via systemd: sudo systemctl restart hermes-dashboard
-# Or kill and restart: hermes dashboard
-
-# 5. Visit http://127.0.0.1:9119/pulse
+hermes dashboard  # or restart
 ```
 
-### Option 2: Using Hermes plugin CLI (when available)
+---
 
-```bash
-hermes plugins install spiritclawd/hermes-pulse
+## What Problem Does This Solve?
+
+Before Pulse, to know if your agent was alive you had to:
+- `tail ~/.hermes/logs/errors.log` (scrolling, no overview)
+- `hermes status` in a separate terminal (out of sight, out of mind)
+- Guess token usage until the bill arrives
+- Manually find and kill the gateway process to restart
+
+Pulse puts **operational awareness** at your fingertips. One tab. Always current. No context switching.
+
+---
+
+## Features
+
+### 📊 Agent Status
+- Gateway health (running / stopped) with heartbeat indicator
+- Active sessions count (animated count-up)
+- Agent version + uptime
+- Recent activity feed (last 12 sessions with platform, model, message count)
+
+### ⚡ Token Usage Gauge
+- Visual progress bar (configurable max, default 1M tokens)
+- Real-time cost display (USD)
+- Cache hit rate badge
+- 7-day sparkline trend with gradient fill
+
+### 🚨 Error Awareness
+- Live error stream from `/api/logs?level=ERROR`
+- Timestamped, color-coded, scrollable
+- Shows "All systems operational" when clean
+
+### ⚙️ Quick Actions
+- Restart gateway (one click, no CLI)
+- Clear cache (placeholder)
+- Open full logs viewer
+- Browse sessions
+
+### 🎨 Design
+- Cyberpunk HUD aesthetic (Orbitron headers, Share Tech Mono mono)
+- Smooth count-up animations on load
+- Heartbeat pulse with double-layer ping effect
+- Scrollbar-styled panels
+- Theme-aware colors (respects your selected palette)
+- Fade-in entrance, subtle glow on primary elements
+
+---
+
+## Data Sources
+
+All data comes from Hermes built-in APIs — no extra configuration needed:
+
+| Dashboard Element | API Endpoint |
+|-------------------|--------------|
+| Agent status, sessions | `GET /api/status` |
+| Token usage, cost, trend | `GET /api/analytics/usage?days=7` |
+| Error log | `GET /api/logs?level=ERROR&limit=20` |
+| Restart gateway | `POST /api/gateway/restart` |
+
+Plugin adds one custom route: `GET /api/plugins/hermes-pulse/health` (health check).
+
+---
+
+## Technical Details
+
+- **Framework:** React 18 + TypeScript
+- **Build:** Vite (IIFE bundle, external React) → 76 KB
+- **UI Kit:** shadcn/ui primitives (Card, Button, Badge)
+- **Icons:** Lucide React
+- **Animation:** Custom `useCountUp` hook (requestAnimationFrame, ease-out cubic)
+- **Compatibility:** Hermes Agent v0.11.0+ (dashboard plugin system)
+
+### Bundle Breakdown
+```
+index.iife.js   76.5 KB  (gzipped ~22 KB)
+React: external (provided by dashboard)
+No other runtime deps
 ```
 
-## 🔧 Development
+---
+
+## Installation (Manual)
 
 ```bash
-# Install dependencies
-npm install
-
-# Development build with watch
-npm run dev
-
-# Production build
+# 1. Clone and build
+git clone https://github.com/spiritclawd/hermes-pulse.git
+cd hermes-pulse
+npm ci --omit=dev  # or just npm install
 npm run build
 
-# The built bundle appears at dist/index.js
+# 2. Install to Hermes
+mkdir -p ~/.hermes/plugins/hermes-pulse/dashboard
+cp dist/index.js manifest.json plugin_api.py ~/.hermes/plugins/hermes-pulse/dashboard/
+
+# 3. Restart Hermes dashboard
+# If running as service: sudo systemctl restart hermes-dashboard
+# If running manually: kill the process and `hermes dashboard`
+
+# 4. Open http://127.0.0.1:9119/pulse
 ```
 
-### Project Structure
+### Uninstall
+```bash
+rm -rf ~/.hermes/plugins/hermes-pulse
+hermes dashboard --restart
+```
+
+---
+
+## Theme Pairing: HUD Cyber
+
+For the full operational cockpit experience, install the **HUD Cyber** theme:
+
+```bash
+git clone https://github.com/spiritclawd/hud-cyber-theme.git
+cp hud-cyber-theme/hud-cyber.yaml ~/.hermes/dashboard-themes/
+hermes dashboard --restart
+```
+
+Then select **HUD Cyber** from the theme switcher. The theme uses `layoutVariant: cockpit` which reserves a sidebar slot — Pulse detects this and adapts its layout for the wider canvas.
+
+![HUD Cyber + Pulse](./docs/pzaia-screenshot.png)
+*The complete command center.*
+
+---
+
+## Why This Isn't Just Another Dashboard Widget
+
+### 1. **It's a heartbeat, not a snapshot**
+The 5-second auto-refresh means you see state changes in near-real-time. Watch the token gauge climb, see errors appear the moment they happen, catch a gateway restart in progress.
+
+### 2. **Animations with purpose**
+Numbers don't just appear — they roll up from zero. The heartbeat pulses stronger when the gateway is alive. The sparkline has area fill for quick volume perception. Every motion signals *something*.
+
+### 3. **Zero configuration detective work**
+The plugin queries the same APIs you would — it just does it for you and arranges the answers in a scannable format. No setup. No env vars. No extra permissions.
+
+### 4. **Built to be there**
+It lives in the dashboard, not a separate tab or external service. You'll actually use it because it's always visible, always current, and doesn't demand attention — just informs.
+
+---
+
+## Configuration
+
+**Token gauge max** — edit `src/PulseDashboard.tsx` line ~165, change `max={1000000}` to your budget.
+
+**Refresh interval** — line ~99, change `5000` (ms) to something else.
+
+**Error limit** — line ~104, change `limit=20` in the logs fetch URL.
+
+**Theme colors** — The plugin respects your selected theme's `--color-*` CSS variables. Override them in your theme YAML to change gauge/accent colors.
+
+---
+
+## Development
+
+```bash
+npm install
+npm run dev   # watch mode, rebuilds on change
+npm run build # production
+```
+
+The dashboard automatically reloads plugins on save during development (HMR).
+
+---
+
+## Files
 
 ```
 hermes-pulse/
-├── manifest.json       # Plugin manifest (Hermes plugin system)
-├── plugin_api.py       # FastAPI backend routes (optional)
-├── dist/               # Built frontend bundle
-│   └── index.js
+├── manifest.json          # Plugin descriptor (Hermes v0.11+)
+├── plugin_api.py          # Optional FastAPI routes (health check)
+├── dist/
+│   └── index.js           # Built IIFE bundle (76 KB)
+├── docs/
+│   ├── pzaia-screenshot.png   # Full dashboard screenshot
+│   └── pzaia-demo.mp4         # 8-second demo video
 ├── src/
-│   ├── index.tsx       # Entry point — registers plugin
-│   └── PulseDashboard.tsx  # Main React component
-├── package.json        # Node dependencies (React + shadcn/ui)
-├── vite.config.ts      # Vite build configuration
-└── tsconfig.json       # TypeScript config
+│   ├── index.tsx          # Entry: registers plugin component
+│   └── PulseDashboard.tsx # Main UI (721 lines, hooks, animations)
+├── package.json           # Dependencies (react, lucide, clsx)
+├── vite.config.ts         # Build: external react, IIFE output
+├── tsconfig.json          # TS with path alias for Hermes SDK
+└── README.md              # This file
 ```
-
-## 🎨 Theme Pairing
-
-For the full cyberpunk HUD experience, pair with the **HUD Cyber** theme:
-
-```bash
-# Install the theme
-mkdir -p ~/.hermes/dashboard-themes
-cp hud-cyber.yaml ~/.hermes/dashboard-themes/
-
-# Restart dashboard to pick up new theme
-```
-
-Then select **HUD Cyber** from the theme switcher in the dashboard header. The plugin is optimized for `layoutVariant: cockpit` which activates a dedicated sidebar slot (reserved by the theme).
-
-## 🛠 API Endpoints
-
-The plugin uses built-in Hermes endpoints:
-
-| Endpoint | Purpose |
-|----------|---------|
-| `GET /api/status` | Agent version, gateway status, active sessions |
-| `GET /api/analytics/usage?days=7` | Token counts, cost, cache hit rate, daily breakdown |
-| `GET /api/logs?level=ERROR&limit=20` | Recent error messages |
-| `POST /api/gateway/restart` | Restart the gateway (quick action) |
-| `GET /api/plugins/hermes-pulse/health` | Plugin health check (custom) |
-
-The plugin also exposes a custom health endpoint at `/api/plugins/hermes-pulse/health`.
-
-## 🎯 Use Cases
-
-- **Keep an eye on your agent** — See at a glance if the gateway is up, how many sessions are active, and if anything's broken
-- **Monitor costs** — Token gauge shows usage vs budget (configurable max), cost in USD
-- **Debug errors** — Latest errors appear in a dedicated panel with timestamps, no need to tail logs
-- **Quick operations** — Restart gateway or clear cache without leaving the dashboard
-
-## 🎨 Customization
-
-The plugin respects your selected theme's color palette via CSS variables. Colors map automatically:
-
-| Element | CSS Variable |
-|---------|-------------|
-| Primary gauge color | `--color-primary` |
-| Accent (amber) | `--color-accent` |
-| Success (green) | `--color-success` |
-| Destructive (red) | `--color-destructive` |
-
-You can adjust the max token gauge by editing `src/PulseDashboard.tsx` and rebuilding.
-
-## 🧪 Testing
-
-```bash
-# Run local Hermes agent for testing
-hermes doctor        # Check installation
-hermes dashboard     # Start web UI on :9119
-# Visit http://127.0.0.1:9119/pulse
-```
-
-## 📜 License
-
-MIT © 2026 Zaia / spiritclawd
-
-## 🙏 Credits
-
-- Built for the [Hermes Agent](https://github.com/NousResearch/hermes-agent) hackathon (24h)
-- UI components: [shadcn/ui](https://ui.shadcn.com/)
-- Icons: [Lucide](https://lucide.dev/)
-- Hosted on GitHub Pages / Nous Research ecosystem
 
 ---
 
-*"Pulse" — because your agent should have a heartbeat.* 💓
+## Demo Video
+
+[`docs/pzaia-demo.mp4`](./docs/pzaia-demo.mp4) — 8 seconds, shows:
+1. Tab switch to Pulse
+2. Initial count-up animation on sessions gauge
+3. Heartbeat indicator settling into pulse
+4. Hover interactions on session list items
+5. Error panel (empty "all systems operational" state)
+6. Quick action buttons
+
+Watch how numbers settle — not instant, but snappy. That's the ease-out cubic curve.
+
+---
+
+## FAQ
+
+**Does this slow down the dashboard?**
+No. Data fetching is lightweight (small JSON payloads, 5s interval). UI is React but stays idle between polls. No background timers beyond the interval.
+
+**Can I add more metrics?**
+Yes — fork the repo, add additional fetch calls from `/api/*`, add cards to the grid. The component structure is modular.
+
+**Will this work with older Hermes versions?**
+Requires v0.11.0+ (plugin + theme system). Check with `hermes version`.
+
+**Is there a dark mode?**
+Hermes dashboard is dark-only. Theme colors adapt, but Pulse assumes dark background.
+
+**Can I contribute?**
+PRs welcome — but this is a hackathon submission. For production features, open an issue on the main Hermes repo.
+
+---
+
+## License
+
+MIT © 2026 Zaia (spiritclawd)
+
+---
+
+## Credits
+
+- Built for the [Hermes Agent](https://github.com/NousResearch/hermes-agent) 24-hour hackathon, April 2026
+- UI primitives from [shadcn/ui](https://ui.shadcn.com/)
+- Icons from [Lucide](https://lucide.dev/)
+- Fonts: [Orbitron](https://fonts.google.com/specimen/Orbitron) & [Share Tech Mono](https://fonts.google.com/specimen/Share+Tech+Mono) by Google Fonts
+- Installed and tested on Zaia's local infrastructure (`carlos-Aspire-E5-774G`)
+
+---
+
+*"If you can't see it, you can't steer it."* — Zaia
+
+📍 Live on `127.0.0.1:9119/pulse` if you're on my machine. Otherwise, install and come alive.
+
