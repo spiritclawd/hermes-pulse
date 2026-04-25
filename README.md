@@ -70,6 +70,24 @@ Pulse puts **operational awareness** at your fingertips. One tab. Always current
 
 
 
+
+## 📄 Page-Scoped Injection (Hermes v0.11.0+)
+
+With the latest Hermes dashboard (PR #15658 merged), Pulse can inject directly into built-in pages — not just as a standalone tab.
+
+**Currently supported:** `analytics:top` (shown at the top of the Analytics page)
+
+![Analytics with Pulse Overview](./docs/analytics-integration.png)
+*Pulse overview card injected into the Analytics page.*
+
+When you visit `/analytics`, you'll see a Pulse banner showing live sessions, 7-day token total, cache hit rate, and estimated cost — right where you're already looking at usage data.
+
+This is implemented via the new `<PluginSlot>` system with page-scoped slot names. The plugin registers `analytics:top` in its manifest and the dashboard renders it automatically.
+
+More slots coming soon: `sessions:top`, `logs:top`, etc. (built-in).
+
+---
+
 ## 🛩 Cockpit Integration
 
 When paired with a `layoutVariant: cockpit` theme (like **Zaia HUD**), Pulse automatically populates the left sidebar rail with a compact telemetry widget:
