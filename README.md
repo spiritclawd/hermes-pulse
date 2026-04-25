@@ -2,8 +2,8 @@
 
 > **Zaia's live command center** — real-time agent heartbeat, token flow, and error awareness built into the Hermes dashboard.
 
-![Hermes Pulse Screenshot](./docs/pzaia-screenshot.png)
-*Hermes Pulse with HUD Cyber theme — operational telemetry, not just numbers.*
+![Hermes Pulse Screenshot](./docs/zaia-final.png)
+*Hermes Pulse with Zaia HUD theme — sidebar telemetry + full command center.*
 
 ---
 
