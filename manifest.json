@@ -1,0 +1,13 @@
+{
+  "name": "hermes-pulse",
+  "label": "Hermes Pulse",
+  "description": "Live command center \u2014 agent status, token usage, errors, quick actions",
+  "icon": "Activity",
+  "version": "0.1.0",
+  "tab": {
+    "path": "/pulse",
+    "position": "after:analytics"
+  },
+  "entry": "dist/index.js",
+  "api": "plugin_api.py"
+}
