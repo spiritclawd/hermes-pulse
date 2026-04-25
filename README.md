@@ -68,6 +68,31 @@ Pulse puts **operational awareness** at your fingertips. One tab. Always current
 
 ---
 
+
+
+## 🛩 Cockpit Integration
+
+When paired with a `layoutVariant: cockpit` theme (like **Zaia HUD**), Pulse automatically populates the left sidebar rail with a compact telemetry widget:
+
+![Sidebar Widget](./docs/zaia-final.png)
+*Sidebar widget in Zaia HUD — heartbeat, mini gauge, quick stats.*
+
+**Sidebar contents:**
+- **Heartbeat** — pulsing indicator when gateway alive
+- **Token mini-gauge** — horizontal bar with current count
+- **Stats row** — active sessions, uptime
+- **Two-tab panel:**
+  - *Stats* — version, model, cache hit%, total cost
+  - *Active* — recent session list (last 6)
+
+The sidebar refresh interval is 10 seconds (lighter than the main tab's 5s). It's designed to be always visible without demanding attention.
+
+To enable sidebar:
+1. Install a cockpit-layout theme (Zaia HUD recommended)
+2. Pulse detects `layoutVariant === "cockpit"` automatically
+3. Slot registration happens on bundle load — no extra config needed
+
+
 ## Data Sources
 
 All data comes from Hermes built-in APIs — no extra configuration needed:
