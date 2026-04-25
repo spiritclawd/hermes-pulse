@@ -1,9 +1,9 @@
 {
   "name": "hermes-pulse",
-  "label": "Hermes Pulse",
+  "label": "Hermes Pulse \u2014 Zaia Edition",
   "description": "Live command center \u2014 agent status, token usage, errors, quick actions",
   "icon": "Activity",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "tab": {
     "path": "/pulse",
     "position": "after:analytics"
